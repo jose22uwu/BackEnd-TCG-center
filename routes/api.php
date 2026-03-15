@@ -16,6 +16,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('api.registe
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
 Route::get('/cards', [CardController::class, 'index'])->name('api.cards.index');
+Route::get('/carousel', [CardController::class, 'carousel'])->name('api.carousel');
 Route::get('/cards/{card}/price-history', [CardController::class, 'priceHistory'])->name('api.cards.price-history');
 Route::get('/cards/{card}', [CardController::class, 'show'])->name('api.cards.show');
 

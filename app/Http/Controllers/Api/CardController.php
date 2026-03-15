@@ -9,6 +9,33 @@ use Illuminate\Http\Request;
 
 class CardController extends Controller
 {
+    /**
+     * Fixed list of api_identifiers for the home carousel (order preserved).
+     * Ensures name, image and rarity always match.
+     */
+    private const CAROUSEL_API_IDS = [
+        'swsh1-1', 'swsh1-2', 'swsh1-3', 'swsh1-4', 'swsh1-5',
+        'swsh1-6', 'swsh1-7', 'swsh1-8',
+    ];
+
+    public function carousel(): JsonResponse
+    {
+        $ids = self::CAROUSEL_API_IDS;
+        $cards = Card::query()
+            ->whereIn('api_identifier', $ids)
+            ->get()
+            ->keyBy('api_identifier');
+
+        $ordered = [];
+        foreach ($ids as $apiId) {
+            if (isset($cards[$apiId])) {
+                $ordered[] = $cards[$apiId];
+            }
+        }
+
+        return $this->success($ordered);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $perPage = min((int) $request->get('per_page', 15), 50);

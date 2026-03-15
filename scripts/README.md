@@ -1,4 +1,17 @@
-# Scripts de setup del backend
+# Scripts del proyecto
+
+## Deploy con Docker (frontend + backend + MySQL)
+
+Para levantar todo con Docker desde la raíz del proyecto:
+
+- **PowerShell:** `.\scripts\deploy-docker.ps1`
+- **Bash:** `./scripts/deploy-docker.sh`
+
+O directamente: `docker compose up -d --build`. Frontend en http://localhost:8080, API en http://localhost:8000. Ver [docs/DOCKER.md](../docs/DOCKER.md).
+
+---
+
+## Setup del backend (sin Docker)
 
 Scripts para dejar el backend listo desde cero (dependencias, `.env`, migraciones y seeders).
 

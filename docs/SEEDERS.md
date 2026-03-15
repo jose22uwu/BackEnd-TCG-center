@@ -16,8 +16,8 @@ Tras ejecutar `php artisan db:seed` (o `php artisan migrate --seed`) tendrás da
 
 1. **UserTypeSeeder**: Tipos de usuario (user, administrator).
 2. **UserSeeder**: Los 5 usuarios de la tabla anterior.
-3. **CardSeeder**: 8 cartas de ejemplo (solo si la tabla `cards` está vacía). Si ya tienes cartas (p. ej. por sincronización TCGdex), no se insertan más.
-4. **UserCardSeeder**: Asigna cartas a seller, buyer y seller2 con cantidades para poder crear anuncios y completar una venta.
+3. **CardSeeder**: 8 cartas para el carrusel (swsh1-1 a swsh1-8) y 2 más para usuarios de prueba: **Lapras V** (Holo Rare V) y **Lapras VMAX** (Holo Rare VMAX). Obtiene nombre, imagen y rareza desde TCGdex; si falla la petición, usa fallback con datos reales.
+4. **UserCardSeeder**: Asigna cartas a seller, buyer y seller2. Incluye al menos una **Holo Rare V** (Lapras V) y una **Holo Rare VMAX** (Lapras VMAX) para seller y buyer, además del resto de cartas de demo para anuncios y ventas.
 5. **ListingSeeder**:  
    - Un anuncio **cerrado** (venta completada a buyer; se crea factura y se mueven cartas).  
    - Varios anuncios **activos** (seller y seller2).  
@@ -58,6 +58,16 @@ php artisan migrate:fresh --seed
 ```
 
 **Atención:** `migrate:fresh` borra todas las tablas y las vuelve a crear. No uses en producción.
+
+### Si al sembrar ves errores de SSL (TCGdex)
+
+Si aparece "unable to get local issuer certificate", el seeder usa un fallback con datos reales de TCGdex y las 8 cartas se crean con nombre, imagen y rareza correctos. Para que en el futuro se obtengan datos siempre desde la API (p. ej. precios o datos actualizados), puedes poner en `.env`:
+
+```env
+TCGDEX_SSL_VERIFY=false
+```
+
+y volver a ejecutar `php artisan db:seed --class=CardSeeder` o `php artisan migrate:fresh --seed`.
 
 ## Emails de prueba
 

@@ -95,7 +95,17 @@ Eso instala dependencias, crea `.env`, genera la clave, ejecuta migraciones y se
    php artisan queue:work
    ```
 
-## Ejecución
+## Docker (recomendado para quien solo quiera usarlo)
+
+Con Docker y Docker Compose no hace falta instalar PHP ni MySQL ni ejecutar scripts:
+
+```bash
+docker compose up -d
+```
+
+La API queda en http://localhost:8000; la BD se crea y se ejecutan migraciones y seeders al arrancar. Ver [docs/DOCKER.md](docs/DOCKER.md).
+
+## Ejecución en local (sin Docker)
 
 - **Servidor API**
 
