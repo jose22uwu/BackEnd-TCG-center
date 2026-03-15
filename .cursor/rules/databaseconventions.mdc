@@ -1,0 +1,10 @@
+---
+name: databaseconventions
+description: for data bases you only use snake_case convention with full words and never abreviatures
+---
+
+# Overview
+
+- **Bases de datos:** usar siempre **snake_case** en nombres de tablas, columnas, índices y claves.
+- **Palabras completas:** no usar abreviaturas (ej.: `user_id`, no `usr_id`; `created_at`, no `crt_at`).
+- Aplicar en migraciones, modelos (fillable, hidden, casts, relaciones), y en cualquier referencia a columnas/atributos de BD.

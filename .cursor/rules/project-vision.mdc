@@ -1,0 +1,10 @@
+---
+name: project-vision
+description: Apply the Pokemon TCG app vision (full stack, subastas, ver cartas, perfiles estéticos) to all work in this project. Use the skill .cursor/skills/pokemon-tcg-app-vision when designing or implementing features.
+---
+
+# Overview
+
+- Este proyecto es una **app full stack de Pokemon TCG** para **subastar** cartas, **ver/listar** cartas y subastas, y ofrecer **perfiles de usuario estéticamente decentes**.
+- Al diseñar o implementar cualquier parte del sistema (API, UI, modelos, flujos), aplicar la visión y criterios definidos en la skill **pokemon-tcg-app-vision**.
+- Considerar siempre: dominio (usuarios, cartas, subastas, pujas), calidad full stack, y nivel de acabado visual en perfiles y vistas principales.

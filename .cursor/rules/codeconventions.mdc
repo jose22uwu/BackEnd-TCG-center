@@ -1,0 +1,11 @@
+---
+name: codeconventions
+description: for coding during all the project you only write code in CamelCase
+---
+
+# Overview
+
+- **Clases:** PascalCase (ej.: `User`, `ApiInfoController`).
+- **Métodos y funciones:** camelCase (ej.: `getUserById`, `handleRequest`).
+- **Variables y parámetros:** camelCase.
+- Aplicar en todo el código PHP del proyecto (controladores, modelos, servicios, etc.).
