@@ -29,6 +29,20 @@ API REST para una plataforma de compraventa y subasta de cartas **Pokemon TCG**.
 
 ## Instalación
 
+### Opción rápida (recomendada en clon nuevo)
+
+Con PHP 8.2+ y Composer instalados:
+
+```bash
+git clone https://github.com/jose22uwu/BackEnd-TCG-center.git
+cd BackEnd-TCG-center
+composer run setup-backend
+```
+
+Eso instala dependencias, crea `.env`, genera la clave, ejecuta migraciones y seeders. Luego edita `.env` con tu BD si hace falta y arranca con `php artisan serve`. Detalle en [docs/SETUP.md](docs/SETUP.md).
+
+### Instalación paso a paso
+
 1. **Clonar el repositorio**
 
    ```bash
@@ -65,11 +79,13 @@ API REST para una plataforma de compraventa y subasta de cartas **Pokemon TCG**.
    php artisan migrate
    ```
 
-   Para datos iniciales (tipos de usuario, etc.) si existen seeders:
+   Datos de prueba y usuarios con contraseña conocida (ver [docs/SEEDERS.md](docs/SEEDERS.md)):
 
    ```bash
    php artisan db:seed
    ```
+
+   O migrar y sembrar de una vez: `php artisan migrate:fresh --seed` (borra la BD).
 
 5. **Colas y cache**
 
