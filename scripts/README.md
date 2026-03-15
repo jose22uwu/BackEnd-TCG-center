@@ -7,7 +7,7 @@ Para levantar todo con Docker desde la raíz del proyecto:
 - **PowerShell:** `.\scripts\deploy-docker.ps1`
 - **Bash:** `./scripts/deploy-docker.sh`
 
-O directamente: `docker compose up -d --build`. Frontend en http://localhost:8080, API en http://localhost:8000. Ver [docs/DOCKER.md](../docs/DOCKER.md).
+El script incluye el frontend en el deploy: si `FrontPKMNTCG` no tiene código fuente (`src/`), clona el repo del frontend (por defecto `https://github.com/jose22uwu/FrontEnd-TCG-Center.git`). Para usar otro repo: `$env:FRONTEND_REPO = "https://github.com/..."; .\scripts\deploy-docker.ps1`. Frontend en http://localhost:8080, API en http://localhost:8000. Ver [docs/DOCKER.md](../docs/DOCKER.md).
 
 ---
 

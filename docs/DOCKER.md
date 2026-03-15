@@ -18,10 +18,10 @@ Una vez levantado, la app (front + API) y la BD están listas para usar.
 
 Requisitos: **Docker** y **Docker Compose** (o `docker compose` integrado).
 
-1. **Clonar el repositorio** (incluye la carpeta `FrontPKMNTCG` con el frontend).
+1. **Clonar el repositorio del backend**
    ```bash
-   git clone <url-del-repo>
-   cd <nombre-repo>
+   git clone https://github.com/jose22uwu/BackEnd-TCG-center.git
+   cd BackEnd-TCG-center
    ```
 
 2. **Levantar frontend + backend + MySQL**
@@ -32,7 +32,7 @@ Requisitos: **Docker** y **Docker Compose** (o `docker compose` integrado).
    - **PowerShell (Windows):** `.\scripts\deploy-docker.ps1`
    - **Bash (Linux/Mac/Git Bash):** `./scripts/deploy-docker.sh`
 
-   La primera vez construye las imágenes (front y backend) y descarga MySQL; puede tardar unos minutos. En cada arranque del backend se ejecutan migraciones y seeders.
+   La primera vez, si la carpeta `FrontPKMNTCG` no tiene el código fuente del front (carpeta `src/`), el script clona el repositorio del frontend por ti (por defecto `https://github.com/jose22uwu/FrontEnd-TCG-Center.git`; puedes cambiar la URL con la variable de entorno `FRONTEND_REPO`). Luego construye las imágenes y descarga MySQL; puede tardar unos minutos. En cada arranque del backend se ejecutan migraciones y seeders.
 
 3. **Comprobar**
    - **Frontend (app):** http://localhost:8080  

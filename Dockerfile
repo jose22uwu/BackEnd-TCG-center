@@ -1,5 +1,5 @@
-# Backend API (Laravel)
-FROM php:8.2-cli
+# Backend API (Laravel). PHP 8.4 required by composer.lock (Symfony 8.x).
+FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip libzip-dev libcurl4-openssl-dev libonig-dev libxml2-dev \

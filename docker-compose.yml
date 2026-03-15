@@ -8,8 +8,8 @@ services:
       MYSQL_PASSWORD: secret
     volumes:
       - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    # Sin exponer 3306 al host para evitar conflicto con MySQL local. Backend accede por red interna.
+    # Para conectar desde el host, descomenta: ports: - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
       interval: 5s
