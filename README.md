@@ -161,13 +161,63 @@ Todas las respuestas JSON tienen la forma `{ "success": true|false, "message": "
 | GET | `/user/invoices` | Mis facturas |
 | GET | `/invoices/{id}` | Detalle de factura |
 
+| POST | `/ai/chat` | Chat con asistente (question) – reglas TCG, resumen de colección, cartas similares, recomendaciones de catálogo |
+
+## Modelo de embeddings (AI)
+
+El asistente de chat (`POST /ai/chat`) puede devolver **cartas similares** y **recomendaciones de catálogo** basadas en un modelo de embeddings entrenado sobre el catálogo de cartas.
+
+### Qué es el modelo
+
+- **Pipeline**: En la carpeta `ai model/` está el código Python que entrena un modelo (TensorFlow/Keras) con dos ramas de entrada:
+  - **Texto**: nombre, categoría, rareza, set, tipos, nombres de ataques y habilidades, debilidades y resistencias (concatenados y vectorizados).
+  - **Numéricos**: HP, número de ataques/abilities/debilidades/resistencias/tipos, y flags de variante (holo, reverse, first edition).
+- Una capa compartida **cardEmbedding** (64 dimensiones) se entrena con cabezas auxiliares de clasificación de **categoría** y **rareza**. Tras el entrenamiento se extraen los vectores L2-normalizados de todas las cartas y se guardan en un índice.
+- **Artifacts generados** (en `ai model/artifacts/`):
+  - `card_embedding_model.keras`: modelo entrenado.
+  - `card_embedding_index.npz`: vectores por carta (`cardIds`, `embeddings`).
+  - `embedding_metadata.json`: vocabularios y metadatos.
+
+### Cómo se usan los embeddings en el chatbot
+
+1. **Cartas similares**  
+   Cuando el usuario pregunta por una carta concreta (p. ej. “cartas similares a Lapras V”), el chatbot busca el vector de esa carta en el índice y calcula la **similitud por producto escalar** con el resto de vectores. Las cartas con mayor puntuación se devuelven en `similarCards`. Así se ofrecen sugerencias por **similitud semántica** (nombre, tipo, rareza, ataques/habilidades).
+
+2. **Recomendaciones de catálogo**  
+   Para preguntas del tipo “qué cartas del catálogo encajan con mi colección”, se construye un **perfil de colección**: promedio ponderado de los vectores de las cartas del usuario (por cantidad). Ese vector se compara con los vectores del catálogo; las cartas con mayor puntuación se devuelven en `recommendedCatalogCards`. Sirve para recomendar cartas que “encajan” con lo que ya tiene el usuario.
+
+3. **Sin índice de embeddings**  
+   Si no existe `card_embedding_index.npz`, el chatbot sigue funcionando (reglas TCG, resumen de colección, etc.) pero no devuelve `similarCards` ni `recommendedCatalogCards`, y en la respuesta `embeddingsAvailable` es `false`. El mensaje de ayuda indica cómo generar el índice.
+
+### Cómo generar el índice (entrenar el modelo)
+
+Desde la raíz del backend, con Python 3 y dependencias instaladas en `ai model/` (p. ej. `pip install -r "ai model/requirements.txt"` en un venv):
+
+```bash
+cd "ai model"
+python train_embedding_model.py
+```
+
+Dentro de `ai model/` también puedes ejecutar directamente `python embedding_pipeline.py` (mismo efecto).
+
+Se requiere tener **al menos 100 cartas** en la BD (p. ej. tras `Sync300TcgdexCardsSeeder`). El script lee las cartas desde MySQL (usando `DB_*` del `.env`), entrena el modelo y escribe los artifacts en `ai model/artifacts/`. En Docker el chatbot usa un venv con dependencias mínimas (`requirements-docker.txt`, sin TensorFlow); el entrenamiento se hace en un entorno con TensorFlow instalado y luego se puede copiar solo `card_embedding_index.npz` (y opcionalmente el modelo) al contenedor o al host donde corre el chatbot.
+
+Documentación detallada del alcance del chatbot y limitaciones: [docs/AI-CHATBOT-SCOPE.md](docs/AI-CHATBOT-SCOPE.md).
+
 ## Estructura relevante
 
 ```
 app/
-├── Http/Controllers/Api/   # Controladores de la API
+├── Http/Controllers/Api/   # Controladores de la API (incl. AiChatController)
 ├── Models/                 # User, Card, Listing, Bid, Invoice, etc.
 ├── Services/               # Lógica de negocio (ej. sincronización TCGdex)
+ai model/                   # Modelo de embeddings y chatbot Python
+├── chatbot.py              # Asistente: reglas, colección, similares, recomendaciones
+├── embedding_pipeline.py   # Entrenamiento del modelo y generación del índice
+├── train_embedding_model.py
+├── rule_engine.py          # Reglas TCG y resumen de colección
+├── db.py, config.py        # Conexión MySQL y configuración
+├── artifacts/              # card_embedding_index.npz, modelo, metadata (generados)
 database/
 ├── migrations/             # Esquema de BD
 routes/
