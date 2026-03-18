@@ -9,8 +9,10 @@ abstract class Controller extends BaseController
 {
     /**
      * Success JSON response.
+     *
+     * @param  int  $encodingOptions  Optional flags for json_encode (e.g. JSON_INVALID_UTF8_SUBSTITUTE).
      */
-    protected function success(mixed $data = null, string $message = 'OK', int $code = 200): JsonResponse
+    protected function success(mixed $data = null, string $message = 'OK', int $code = 200, int $encodingOptions = 0): JsonResponse
     {
         $body = [
             'success' => true,
@@ -21,7 +23,7 @@ abstract class Controller extends BaseController
             $body['data'] = $data;
         }
 
-        return response()->json($body, $code);
+        return response()->json($body, $code, [], $encodingOptions);
     }
 
     /**

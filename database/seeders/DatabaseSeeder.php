@@ -8,7 +8,7 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     * Order matters: UserType -> User -> Card -> UserCard -> Listing -> Bid.
+     * Order: UserType -> User -> Card (demo) -> Sync300Tcgdex (300 cartas) -> UserWith75Cards -> UserCard -> Listing -> Bid.
      */
     public function run(): void
     {
@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             UserTypeSeeder::class,
             UserSeeder::class,
             CardSeeder::class,
+            Sync300TcgdexCardsSeeder::class,
+            UserWith75CardsSeeder::class,
             UserCardSeeder::class,
             ListingSeeder::class,
             BidSeeder::class,

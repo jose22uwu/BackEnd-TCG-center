@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\ApiInfoController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BidController;
@@ -44,4 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user/invoices', [InvoiceController::class, 'index'])->name('api.user.invoices');
     Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('api.invoices.show');
+
+    Route::post('/ai/chat', AiChatController::class)->name('api.ai.chat');
 });

@@ -32,7 +32,7 @@ if (-not (Test-Path $frontSrc)) {
         exit 1
     }
     if (-not (Test-Path $frontDir)) { New-Item -ItemType Directory -Path $frontDir | Out-Null }
-    $toCopy = @('src', 'index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'vite.config.ts', 'public', 'favicon.svg')
+    $toCopy = @('src', 'index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'vite.config.ts', 'nginx.conf', 'public', 'favicon.svg')
     foreach ($item in $toCopy) {
         $srcPath = Join-Path $cloneDir $item
         if (Test-Path $srcPath) {

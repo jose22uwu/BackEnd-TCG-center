@@ -14,3 +14,7 @@ tests
 .phpunit.result.cache
 .idea
 .vscode
+ai model/.venv-wsl
+ai model/.venv-windows
+ai model/__pycache__
+ai model/*/__pycache__

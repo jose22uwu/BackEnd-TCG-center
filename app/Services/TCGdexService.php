@@ -169,6 +169,64 @@ class TCGdexService
     }
 
     /**
+     * Sync up to $limit cards from the given sets (in order). Each card is fetched in full
+     * so api_data contains HP, attacks, abilities, types, weaknesses, resistances (sinergias).
+     *
+     * @param  int  $limit  Max total cards to sync
+     * @param  array<string>  $setIds  Set ids (e.g. ['swsh1', 'swsh2'])
+     * @return array{synced: int, failed: int, errors: string[]}
+     */
+    public function syncCardsLimit(int $limit, array $setIds = []): array
+    {
+        if ($limit <= 0) {
+            return ['synced' => 0, 'failed' => 0, 'errors' => []];
+        }
+
+        $defaultSets = ['swsh1', 'swsh2'];
+        $setIds = $setIds ?: $defaultSets;
+
+        $synced = 0;
+        $failed = 0;
+        $errors = [];
+
+        foreach ($setIds as $setId) {
+            if ($synced + $failed >= $limit) {
+                break;
+            }
+
+            $set = $this->tcgdex->set->get($setId);
+            if ($set === null || empty($set->cards)) {
+                continue;
+            }
+
+            $remaining = $limit - $synced - $failed;
+            $cards = array_slice($set->cards, 0, $remaining);
+
+            foreach ($cards as $cardResume) {
+                $cardId = $cardResume->id ?? null;
+                if (empty($cardId)) {
+                    $failed++;
+                    continue;
+                }
+                try {
+                    $fullCard = $cardResume->toCard();
+                    if ($fullCard !== null) {
+                        $this->mapApiCardToModel($fullCard);
+                        $synced++;
+                    } else {
+                        $failed++;
+                    }
+                } catch (\Throwable $e) {
+                    $failed++;
+                    $errors[] = "{$cardId}: " . $e->getMessage();
+                }
+            }
+        }
+
+        return ['synced' => $synced, 'failed' => $failed, 'errors' => $errors];
+    }
+
+    /**
      * Get SDK instance for direct use (list, query, etc.).
      */
     public function getSdk(): TCGdex

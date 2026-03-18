@@ -8,13 +8,12 @@ services:
       MYSQL_PASSWORD: secret
     volumes:
       - mysql_data:/var/lib/mysql
-    # Sin exponer 3306 al host para evitar conflicto con MySQL local. Backend accede por red interna.
-    # Para conectar desde el host, descomenta: ports: - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
   backend:
     build: .
@@ -24,24 +23,35 @@ services:
       DB_DATABASE: subasta_pokemon
       DB_USERNAME: laravel
       DB_PASSWORD: secret
-      APP_URL: http://localhost:8000
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      ARTISAN_SEED: ${ARTISAN_SEED:-1}
+      AI_PYTHON_PATH: "/app/ai model/.venv/bin/python3"
+      TCGDEX_SSL_VERIFY: ${TCGDEX_SSL_VERIFY:-true}
     ports:
       - "8000:8000"
     depends_on:
       mysql:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "artisan", "route:list", "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./FrontPKMNTCG
       dockerfile: Dockerfile
       args:
-        # URL del backend tal como la verá el navegador (mismo host: puerto del backend)
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
     ports:
       - "8080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   mysql_data:

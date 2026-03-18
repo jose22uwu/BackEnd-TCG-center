@@ -9,14 +9,16 @@ class SyncTcgdexCards extends Command
 {
     protected $signature = 'tcgdex:sync-cards
                             {--set= : Set id (e.g. swsh3) to sync all cards from the set}
+                            {--sets= : Comma-separated set ids (e.g. swsh1,swsh2) for --limit}
                             {--card= : Single card id (e.g. swsh3-136) to sync}
-                            {--limit= : Max cards when using --set (default: no limit)}';
+                            {--limit= : Max cards when using --set (per set) or with --sets (total across sets)}';
 
-    protected $description = 'Fetch cards from TCGdex API and sync to local cards table';
+    protected $description = 'Fetch cards from TCGdex API and sync to local cards table (HP, attacks, sinergias in api_data)';
 
     public function handle(TCGdexService $tcgdex): int
     {
         $setId = $this->option('set');
+        $setsOption = $this->option('sets');
         $cardId = $this->option('card');
         $limit = $this->option('limit') ? (int) $this->option('limit') : null;
 
@@ -28,11 +30,32 @@ class SyncTcgdexCards extends Command
             return $this->syncSet($tcgdex, $setId, $limit);
         }
 
-        $this->components->warn('Provide --set=SET_ID (e.g. swsh3) or --card=CARD_ID (e.g. swsh3-136).');
+        if ($limit !== null && $limit > 0) {
+            $setIds = $setsOption ? array_map('trim', explode(',', $setsOption)) : [];
+            return $this->syncWithLimit($tcgdex, $limit, $setIds);
+        }
+
+        $this->components->warn('Provide --set=SET_ID, --card=CARD_ID, or --limit=N (with optional --sets=swsh1,swsh2).');
         $this->line('Example: php artisan tcgdex:sync-cards --set=swsh3');
-        $this->line('Example: php artisan tcgdex:sync-cards --card=swsh3-136');
+        $this->line('Example: php artisan tcgdex:sync-cards --limit=300');
+        $this->line('Example: php artisan tcgdex:sync-cards --limit=300 --sets=swsh1,swsh2');
 
         return self::FAILURE;
+    }
+
+    private function syncWithLimit(TCGdexService $tcgdex, int $limit, array $setIds): int
+    {
+        $this->info("Syncing up to {$limit} cards (HP, attacks, sinergias from TCGdex)...");
+        $result = $tcgdex->syncCardsLimit($limit, $setIds);
+        $this->components->info("Done. Synced: {$result['synced']}, Failed: {$result['failed']}");
+        foreach (array_slice($result['errors'], 0, 5) as $err) {
+            $this->warn($err);
+        }
+        if (count($result['errors']) > 5) {
+            $this->warn('... and ' . (count($result['errors']) - 5) . ' more.');
+        }
+
+        return self::SUCCESS;
     }
 
     private function syncOneCard(TCGdexService $tcgdex, string $cardId): int

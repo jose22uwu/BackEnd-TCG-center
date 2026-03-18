@@ -28,7 +28,7 @@ if [ ! -f "$FRONT_SRC" ]; then
     rm -rf "$CLONE_DIR"
     git clone --depth 1 "$FRONTEND_REPO" "$CLONE_DIR"
     mkdir -p "$FRONT_DIR"
-    for item in src index.html package.json package-lock.json vite.config.js vite.config.ts public favicon.svg; do
+    for item in src index.html package.json package-lock.json vite.config.js vite.config.ts nginx.conf public favicon.svg; do
         [ -e "$CLONE_DIR/$item" ] && cp -R "$CLONE_DIR/$item" "$FRONT_DIR/"
     done
     rm -rf "$CLONE_DIR"

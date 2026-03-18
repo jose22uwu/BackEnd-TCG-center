@@ -25,3 +25,9 @@ Thumbs.db
 
 # Frontend lives in a separate repo; ignore for backend-only publish
 /FrontPKMNTCG/
+
+# AI model venvs and artifacts (Docker builds its own venv)
+/ai model/.venv-wsl/
+/ai model/.venv-windows/
+/ai model/artifacts/
+/ai model/__pycache__/

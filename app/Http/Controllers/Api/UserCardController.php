@@ -14,13 +14,19 @@ class UserCardController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $cards = $user->cards()
+        $query = $user->cards()
             ->withPivot('quantity')
             ->wherePivot('quantity', '>', 0)
             ->when($request->filled('search'), fn ($q) => $q->where('cards.name', 'like', '%' . $request->search . '%'))
-            ->orderBy('cards.name')
-            ->paginate(min((int) $request->get('per_page', 15), 100));
+            ->orderBy('cards.name');
 
+        $perPage = $request->get('per_page', 15);
+        if ($perPage === 'all' || (is_numeric($perPage) && (int) $perPage === 0)) {
+            $cards = $query->get();
+            return $this->success($cards);
+        }
+
+        $cards = $query->paginate(min((int) $perPage, 500));
         return $this->success($cards);
     }
 
